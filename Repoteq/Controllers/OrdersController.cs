@@ -27,7 +27,7 @@ namespace Repoteq.Controllers
 
         public IActionResult AddMorePartialView()
         {
-            
+
             OrderItem model = new OrderItem();
             return PartialView("View", model);
         }
@@ -45,20 +45,35 @@ namespace Repoteq.Controllers
         // GET: OrdersController/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var order= await _orderRepository.GetById(id);
+            var order = await _orderRepository.GetById(id);
             return View(order);
         }
 
-        // GET: OrdersController/Create
+
         public async Task<IActionResult> Create()
         {
-            var order=await  _orderRepository.GetNoTranckingTable().Include(x=>x.Items).ThenInclude(x=>x.Product).FirstOrDefaultAsync();
-            return View(order);
+            var model = new AddOrderViewModel();
 
-            
+            model.ListProducts = _context.Products.Select(s => new SelectListItem
+            {
+                Text = s.ProductName,
+                Value = s.ProductId.ToString()
+            }).ToList();
+
+            return View(model);
+
+
         }
 
-        // POST: OrdersController/Create
+
+
+        public IActionResult GetProductPrice(int? productId)
+        {
+            if (productId != null)
+                return Json(_context.Products.Find(productId).Price);
+            return Json("0");
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Order model)
@@ -66,16 +81,16 @@ namespace Repoteq.Controllers
             try
             {
                 var product = await _productRepository.GetById(model.OrderId);
-                
-                foreach(var item in model.Items)
+
+                foreach (var item in model.Items)
                 {
                     var orderItem = new OrderItem
                     {
-                        Product= product,
+                        Product = product,
                         Price = product.Price,
                         Quantity = item.Quantity,
                         PriceAfterDiscount = item.PriceAfterDiscount,
-                        
+
                     };
                     _context.OrderItems.Add(orderItem);
                     _context.SaveChanges();
@@ -85,14 +100,14 @@ namespace Repoteq.Controllers
                         CustomerName = model.CustomerName,
                         Date = DateTime.Now,
                         OrderCode = model.OrderCode,
-                        Total= (int)orderItem.Total
+                        Total = (int)orderItem.Total
                     };
                     await _orderRepository.Add(order);
 
                 }
-               
+
                 return RedirectToAction(nameof(Index));
- 
+
             }
             catch
             {
@@ -108,23 +123,23 @@ namespace Repoteq.Controllers
             var getorder = await _orderRepository.GetById(id);
             if (getorder == null) return NotFound();
 
-            
-            
+
+
 
             var order = new Order
             {
-                CustomerName= getorder.CustomerName,
-                OrderCode= getorder.OrderCode,
+                CustomerName = getorder.CustomerName,
+                OrderCode = getorder.OrderCode,
                 Items = (ICollection<OrderItem>)getorder.Items.Select(item => new OrderItem
                 {
                     Price = item.Price,
-                    Quantity= item.Quantity,
+                    Quantity = item.Quantity,
                     Product = item.Product,
                     PriceAfterDiscount = item.PriceAfterDiscount
                 })
             };
-            
-           
+
+
 
             return View(order);
         }
@@ -190,7 +205,7 @@ namespace Repoteq.Controllers
                 _orderRepository.Delete(order);
                 return RedirectToAction(nameof(Index));
             }
-            
+
             catch
             {
                 return View();
