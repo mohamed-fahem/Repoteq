@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+
+    <div class="summary">
+        <div class="summary-item">
+            <img src="~/Images/4909669.png" alt="Products" class="summary-image" />
+            <span class="summary-label">Products</span>
+            <span class="summary-count">@ViewBag.ProductCount</span>
+        </div>
+        <div class="summary-item">
+            <img src="~/Images/6894515.png" alt="Orders" class="summary-image" />
+            <span class="summary-label">Orders</span>
+            <span class="summary-count">@ViewBag.OrderCount</span>
+        </div>
+    </div>
+    @*<h2>Total Products: @ViewBag.ProductCount</h2>
+    <h2>Total Orders: @ViewBag.OrderCount</h2>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>*@
+</div>

@@ -1,0 +1,60 @@
+﻿@model Repoteq.Models.OrderItem
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+@using Repoteq.Helpers;
+@{
+    //BeginCollectionItemCore already created in HtmlHelper.cs class
+}
+
+@using (Html.BeginCollectionItem("Product"))
+{
+    <div class="row">
+    <div class="col-md-4">
+        <form asp-action="View">
+            <div id="removeAddMoreDiv">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="form-group">
+                <label asp-for="ProductId" class="control-label"></label>
+                @*<select asp-for="ProductId" class="form-control"
+                        asp-items="@(new SelectList(Model.Product,"ProductId","ProductName"))"></select>*@
+                 <select asp-for="ProductId" class="form-control" asp-items="ViewBag.ProductId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Quantity" class="control-label"></label>
+                <input asp-for="Quantity" class="form-control" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PriceAfterDiscount" class="control-label"></label>
+                <input asp-for="PriceAfterDiscount" class="form-control" />
+                <span asp-validation-for="PriceAfterDiscount" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <button type="button" class="btn btn-danger btn-sm removeDiv">
+                    Remove
+                </button>
+            </div>
+            </div>
+        </form>
+    </div>
+    </div>
+
+}
+
+<script>
+    $(".removeDiv").click(function () {
+        $(this).parents("#removeAddMoreDiv").remove();
+    });
+</script>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

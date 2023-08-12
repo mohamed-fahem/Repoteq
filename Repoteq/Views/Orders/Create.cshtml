@@ -1,0 +1,80 @@
+﻿@model Repoteq.Models.Order
+
+@{
+    ViewData["Title"] = "Create";
+}
+<style>
+    .form-group-material {
+        position: relative;
+        margin-bottom: 0px !important;
+    }
+</style>
+<h1>Create</h1>
+
+<h4>Order</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="OrderCode" class="control-label"></label>
+                <input asp-for="OrderCode" class="form-control" />
+                <span asp-validation-for="OrderCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CustomerName" class="control-label"></label>
+                <input asp-for="CustomerName" class="form-control" />
+                <span asp-validation-for="CustomerName" class="text-danger"></span>
+            </div>
+            <section class="forms">
+    
+                <div class="card">
+                    <div class="card-body">
+                        <form asp-action="Create" class="text-left form-validate">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <br />
+                            <div class="col-sm-12">
+                                            @Html.Partial("View")
+                            </div>
+                            <div id="addAddMoreDiv"></div>
+                            <a id="add_row" class="btn btn-primary float-right"> Add Row</a>
+                            <br />
+                            <br />
+                            <input type="submit" class="btn btn-primary float-left" value="Save" />
+                        </form>
+                    </div>
+                </div>
+            
+            </section>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-outline-primary">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+        <script>
+            $('#add_row').on('click', function () {
+                $.ajax({
+                    url: '@Url.Action("AddMorePartialView", "Orders")',
+                    type: 'GET',
+                    data: {
+                    },
+                    success: function (result) {
+                        $('#addAddMoreDiv').append(result);
+                    },
+                    error: function () {
+                    }
+                });
+            });
+        </script>
+}
+@{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
