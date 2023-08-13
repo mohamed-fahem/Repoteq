@@ -1,4 +1,4 @@
-﻿@model Repoteq.Models.Order
+﻿@model Repoteq.ViewModel.Orders.AddOrderViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -14,43 +14,113 @@
 <h4>Order</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="OrderCode" class="control-label"></label>
-                <input asp-for="OrderCode" class="form-control" />
-                <span asp-validation-for="OrderCode" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CustomerName" class="control-label"></label>
-                <input asp-for="CustomerName" class="form-control" />
-                <span asp-validation-for="CustomerName" class="text-danger"></span>
-            </div>
-            <section class="forms">
-    
-                <div class="card">
-                    <div class="card-body">
-                        <form asp-action="Create" class="text-left form-validate">
-                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                            <br />
-                            <div class="col-sm-12">
-                                            @Html.Partial("View")
-                            </div>
-                            <div id="addAddMoreDiv"></div>
-                            <a id="add_row" class="btn btn-primary float-right"> Add Row</a>
-                            <br />
-                            <br />
-                           @* <input type="submit" class="btn btn-primary float-left" value="Save" />*@
-                        </form>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="OrderNumber" class="control-label"></label>
+                        <input asp-for="OrderNumber" class="form-control" />
+                        <span asp-validation-for="OrderNumber" class="text-danger"></span>
                     </div>
                 </div>
-            
-            </section>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-outline-primary">Back to List</a>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="CustomerName" class="control-label"></label>
+                        <input asp-for="CustomerName" class="form-control" />
+                        <span asp-validation-for="CustomerName" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
+            <br />
+            <br />
+
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Product</label>
+                        <select asp-items="@Model.ListProducts" id="txt-product"
+                                onchange="LoadProductPrice(value);" class="form-control">
+                            <option value="" selected> Select Product</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Price</label>
+                        <input type="number" id="text-price" disabled class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" id="txt-quantity" onkeyup="CalculateTotal()" class="form-control" />
+                    </div>
+                </div>
+
+
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>Total</label>
+                        <input type="number" id="txt-total" class="form-control" disabled />
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <a href="#" class="btn btn-primary ">Add</a>
+                </div>
+
+            </div>
+
+            <hr />
+
+
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table">
+                        <thead>
+                            <tr style="background-color:lightblue;">
+                                <th>#</th>
+                                <th>Product Name</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>prod_1</td>
+                                <td>100</td>
+                                <td>1</td>
+                                <td>100</td>
+                                <td>
+                                    <div class="form-group">
+                                        <a href="#" class="btn btn-primary btn-sm"> Edit</a>
+                                        <a href="#" class="btn btn-danger btn-sm"> Remove</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+
+            <br />
+            <hr />
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <a href="#" class="btn btn-primary ">Save</a>
+                    <a href="#" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
         </form>
     </div>
 </div>
@@ -59,22 +129,28 @@
 
 
 @section Scripts {
-        <script>
-            $('#add_row').on('click', function () {
-                $.ajax({
-                    url: '@Url.Action("AddMorePartialView", "Orders")',
-                    type: 'GET',
-                    data: {
-                    },
-                    success: function (result) {
-                        $('#addAddMoreDiv').append(result);
-                    },
-                    error: function () {
-                    }
-                });
+    <script>
+
+
+        function LoadProductPrice(prodId) {
+
+            $.get(`/orders/getproductprice?productId=${prodId}`, function (res) {
+                //alert(res);
+                $('#text-price').val(res);
             });
-        </script>
+        }
+
+        function CalculateTotal() {
+            var quantity = $('#txt-quantity').val();
+            var price = $('#text-price').val();
+            var total = quantity * price;
+            $('#txt-total').val(total);
+        }
+
+    </script>
 }
-@{
+
+
+@*@{
     await Html.RenderPartialAsync("_ValidationScriptsPartial");
-}
+}*@
