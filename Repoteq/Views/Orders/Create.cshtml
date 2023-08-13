@@ -32,6 +32,7 @@
                         <label asp-for="CustomerName" class="control-label"></label>
                         <input asp-for="CustomerName" class="form-control" />
                         <span asp-validation-for="CustomerName" class="text-danger"></span>
+
                     </div>
                 </div>
             </div>
@@ -69,7 +70,7 @@
                     </div>
                 </div>
                 <div class="col-md-1">
-                    <a href="#" class="btn btn-primary ">Add</a>
+                    <input type="button" id="add-item-btn" class="btn btn-primary" value="Add">
                 </div>
 
             </div>
@@ -91,19 +92,19 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>prod_1</td>
-                                <td>100</td>
-                                <td>1</td>
-                                <td>100</td>
-                                <td>
-                                    <div class="form-group">
-                                        <a href="#" class="btn btn-primary btn-sm"> Edit</a>
-                                        <a href="#" class="btn btn-danger btn-sm"> Remove</a>
-                                    </div>
-                                </td>
-                            </tr>
+                            @*<tr>
+                            <td>1</td>
+                            <td>prod_1</td>
+                            <td>100</td>
+                            <td>1</td>
+                            <td>100</td>
+                            <td>
+                            <div class="form-group">
+                            <a href="#" class="btn btn-primary btn-sm"> Edit</a>
+                            <a href="#" class="btn btn-danger btn-sm"> Remove</a>
+                            </div>
+                            </td>
+                            </tr>*@
                         </tbody>
                     </table>
                 </div>
@@ -146,6 +147,86 @@
             var total = quantity * price;
             $('#txt-total').val(total);
         }
+
+        $(function () {
+            var itemIndex = 1;
+            $(document).on('click', '#add-item-btn', function (e) {
+                e.preventDefault();
+                var selectedProduct = $('#txt-product option:selected');
+                var productName = selectedProduct.text();
+                var price = $('#text-price').val();
+                var quantity = $('#txt-quantity').val();
+                var total = price * quantity;
+
+                // Check if a product is selected
+                if (selectedProduct.val() === '') {
+                    alert('Please select a product.');
+                    return;
+                }
+
+                // Validate price and quantity
+                if (price <= 0 || quantity <= 0) {
+                    alert('Price and quantity must be greater than 0.');
+                    return;
+                }
+
+                // Check if product is already added
+                var isProductAdded = false;
+                $('table tbody tr').each(function () {
+                    var existingProductName = $(this).find('td:nth-child(2)').text();
+                    if (existingProductName === productName) {
+                        isProductAdded = true;
+                        return false; // Exit the loop
+                    }
+                });
+
+                if (isProductAdded) {
+                    alert('Product is already added.');
+                    return;
+                }
+
+                
+                if (productName && price && quantity && total) {
+                    // Create a new table row with the item details
+                    var newRow = $('<tr>');
+                    newRow.append('<td>' + itemIndex + '</td>');
+                    newRow.append('<td>' + productName + '</td>');
+                    newRow.append('<td>' + price + '</td>');
+                    newRow.append('<td>' + quantity + '</td>');
+                    newRow.append('<td>' + total + '</td>');
+
+                    // Add edit and remove buttons to the row
+                    newRow.append('<td>' +
+                        '<div class="form-group">' +
+                        '<input type="button" id="edit-item-btn" class="btn btn-primary" value="Edit">' +
+                        '<input type="button" id="remove-item-btn" class="btn btn-danger" value="Remove">' +
+                        '</div>' +
+                        '</td>');
+
+                    // Append the new row to the table body
+                    $('table tbody').append(newRow);
+
+                    // Increment the item index
+                    itemIndex++;
+                    $('table tbody').append(newRow);
+                }
+
+                $(document).on('click', '#edit-item-btn', function () {
+                    var row = $(this).closest('tr');
+                    var productName = row.find('td:nth-child(1)').text();
+                    var price = row.find('td:eq(3)').text();
+                    var quantity = row.find('td:eq(4)').text();
+
+
+                    $('#txt-product').val(productName);
+                    $('#text-price').val(price);
+                    $('#txt-quantity').val(quantity);
+                    CalculateTotal();
+
+                })
+
+            });
+        })
 
     </script>
 }
