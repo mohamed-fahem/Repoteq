@@ -33,7 +33,10 @@ namespace Repoteq.Controllers
         }
 
 
-
+        public IActionResult orderItemTable(int? productId)
+        {
+            
+        }
 
         // GET: OrdersController
         public async Task<IActionResult> Index()
