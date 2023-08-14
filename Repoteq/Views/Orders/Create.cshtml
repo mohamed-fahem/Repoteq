@@ -16,7 +16,7 @@
 <div class="row">
     <div class="col-md-3"></div>
     <div class="col-md-6">
-        <form asp-action="Create">
+        <form asp-action="Create" id="add-order-form">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="row">
@@ -106,16 +106,6 @@
                             </td>
                             </tr>*@
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <td>
-                                    Total
-                                </td>
-                                <td>
-
-                                </td>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
 
@@ -127,7 +117,8 @@
             <div class="row">
                 <div class="col-md-4"></div>
                 <div class="col-md-4">
-                    <input type="button" id="save-item-btn" onclick="BtnSave" class="btn btn-primary" value="Save">
+                    <input type="button" id="save-item-btn"
+                           onclick="BtnSave()" class="btn btn-primary" value="Save">
                     <a href="#" class="btn btn-danger">Cancel</a>
                 </div>
             </div>
@@ -144,7 +135,6 @@
 
 
         function LoadProductPrice(prodId) {
-
             $.get(`/orders/getproductprice?productId=${prodId}`, function (res) {
                 //alert(res);
                 $('#text-price').val(res);
@@ -159,7 +149,7 @@
         }
 
         $(function () {
-            
+
             $(document).on('click', '#add-item-btn', function (e) {
                 e.preventDefault();
                 var selectedProduct = $('#txt-product option:selected');
@@ -196,7 +186,7 @@
                     return;
                 }
 
-                
+
                 if (productName && price && quantity && total) {
                     // Create a new table row with the item details
                     var newRow = $('<tr>');
@@ -213,7 +203,7 @@
                         '<input type="button" id="remove-item-btn" class="btn btn-danger" value="Remove">' +
                         '</div>' +
                         '</td>');
-                    
+
                     // Append the new row to the table body
                     $('table tbody').append(newRow);
 
@@ -227,95 +217,114 @@
                     $('#txt-quantity').val('');
                     $('#txt-total').val('');
                 }
-
-                $(document).on('click', '#edit-item-btn', function () {
-                    
-                    var row = $(this).closest('tr');
-                    var productId = row.find('td:nth-child(0)').val();
-                    var productName = row.find('td:nth-child(1)').text();
-                    var price = row.find('td:nth-child(3)').text();
-                    var quantity = row.find('td:nth-child(4)').text();
-
-                    // Set the edited item details in the input fields
-                    $('#txt-product').val(productName);
-                    $('#text-price').val(price);
-                    $('#txt-quantity').val(quantity);
-                    CalculateTotal();
-
-                    //$('#edit-item-btn').click(function () {
-                    //    $('#add-item-btn').replaceWith("<input type="button" id="save - item - btn" class="btn btn - primary" value="Add">");
-                    
-                    //})
-
-                    
-                    $('#add-item-btn').val('Save').click(function(){
-                        if(row){
-                            var productId = Id;
-                            var productName = $('#txt-product').val();
-                            var price = $('#text-price').val();
-                            var quantity = $('#txt-quantity').val();
-                            var total = $('#txt-total').val();
-                            
-
-                            row.find('td:nth-child(2)').text($('#txt-product').val());
-                            row.find('td:nth-child(3)').text($('#text-price').val());
-                            row.find('td:nth-child(4)').text($('#txt-quantity').val());
-                            row.find('td:nth-child(5)').text($('#txt-total').val());
-                        }
-                    });
-                })
-
-                $(document).on('click', '#remove-item-btn', function(e){
-                    e.preventDefault();
-                    $(this).closest('tr').remove();
-                });
-
             });
+            $(document).on('click', '#edit-item-btn', function () {
+
+                var row = $(this).closest('tr');
+                var productId = row.find('td:nth-child(0)').val();
+                var productName = row.find('td:nth-child(1)').text();
+                var price = row.find('td:nth-child(3)').text();
+                var quantity = row.find('td:nth-child(4)').text();
+
+                // Set the edited item details in the input fields
+                $('#txt-product').val(productName);
+                $('#text-price').val(price);
+                $('#txt-quantity').val(quantity);
+                CalculateTotal();
+
+                //$('#edit-item-btn').click(function () {
+                //    $('#add-item-btn').replaceWith("<input type="button" id="save - item - btn" class="btn btn - primary" value="Add">");
+
+                //})
+
+
+                $('#add-item-btn').val('Save').click(function () {
+                    if (row) {
+                        var productId = Id;
+                        var productName = $('#txt-product').val();
+                        var price = $('#text-price').val();
+                        var quantity = $('#txt-quantity').val();
+                        var total = $('#txt-total').val();
+
+
+                        row.find('td:nth-child(2)').text($('#txt-product').val());
+                        row.find('td:nth-child(3)').text($('#text-price').val());
+                        row.find('td:nth-child(4)').text($('#txt-quantity').val());
+                        row.find('td:nth-child(5)').text($('#txt-total').val());
+                    }
+                });
+            })
+
+            $(document).on('click', '#remove-item-btn', function (e) {
+                e.preventDefault();
+                $(this).closest('tr').remove();
+            });
+
+
         })
 
 
         function BtnSave() {
+            debugger;
+
+            var data;
+            var items = [];
 
             var rows = $('table tr');
-            var rowData = [];
+            for (var i = 1; i < rows.length; i++) {
 
-            for (var i = 0; i < rows.length; i++) {
-                var row = $(rows[i]);
-                var productId = row.find('td: nth - child(0)').val();
-                var productName = row.find('td:nth-child(1)').val();
-                var price = row.find('td:nth-child(3)').val();
-                var quantity = row.find('td:nth-child(4)').val();
+                var prodId = $($(rows[i]).find('td:eq(0)')).text();
+                var price = $($(rows[i]).find('td:eq(2)')).text();
+                var quantity = $($(rows[i]).find('td:eq(3)')).text();
 
 
                 // Create an object to hold the data for the current row
                 var rowObject = {
-                    ProductId: productId,
-                    ProductName: productName,
-                    Price: price,
-                    Quantity: quantity,
+                    'ProductId': prodId,
+                    'Price': price,
+                    'Quantity': quantity,
                 };
 
                 // Add the row object to the array
-                rowData.push(rowObject);
+                items.push(rowObject);
             }
 
-            SubmitSave(rowData);
+            var customerName = 'test';   //$('')
+            var orderCode = '123456';   //$('')
+
+
+            data = {
+                'OrderNumber': orderCode,
+                'CustomerName': customerName,
+                'Items': items
+            };
+            //var strData = JSON.stringify(data);
+
+           // data = `OrderNumber=${orderCode}&CustomerName=${customerName}&Items=${items}`;
+
+            SubmitSave(data);
         }
 
-        function SubmitSave(rowData) {
-
+        function SubmitSave(data) {
+            
             $.ajax({
-                url: '/Orders/ActionName',
+                url: '/Orders/SaveOrder',
                 type: 'POST',
-                data: rowData,
+                data: data,
                 success: function (data) {
-                    data = JSON.parse(data)
+                    alert(JSON.stringify(data));
                 }
 
             });
+
+
+            //$.post('/Orders/SaveOrder',data, (res) => {
+            //            alert(JSON.stringify(res));
+            //});
+
+
         }
 
-        });
 
 
 

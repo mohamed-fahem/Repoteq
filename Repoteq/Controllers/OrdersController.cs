@@ -17,7 +17,8 @@ namespace Repoteq.Controllers
         private readonly IRepoteqRepository<Product> _productRepository;
         private readonly ApplicationDbContext _context;
 
-        public OrdersController(IRepoteqRepository<Order> orderRepository, IRepoteqRepository<Product> productRepository, ApplicationDbContext context)
+        public OrdersController(IRepoteqRepository<Order> orderRepository,
+            IRepoteqRepository<Product> productRepository, ApplicationDbContext context)
         {
             _orderRepository = orderRepository;
             _productRepository = productRepository;
@@ -33,10 +34,12 @@ namespace Repoteq.Controllers
         }
 
 
-        public IActionResult orderItemTable(int? productId)
-        {
-            
-        }
+        //public IActionResult orderItemTable(int? productId)
+        //{
+
+        //}
+
+
 
         // GET: OrdersController
         public async Task<IActionResult> Index()
@@ -78,44 +81,34 @@ namespace Repoteq.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Order model)
+        public async Task<IActionResult> SaveOrder(AddOrderDTO model)
         {
-            try
-            {
-                var product = await _productRepository.GetById(model.OrderId);
 
-                foreach (var item in model.Items)
+            var order = new Order
+            {
+                CustomerName = model.CustomerName,
+                Date = DateTime.Now,
+                OrderCode = int.Parse(model.OrderNumber),
+                Total = model.Items.Select(s => s.Quantity * s.Price).Sum()
+            };
+            _context.Orders.Add(order);
+            _context.SaveChanges();
+
+
+            foreach (var item in model.Items)
+            {
+                _context.OrderItems.Add(new OrderItem
                 {
-                    var orderItem = new OrderItem
-                    {
-                        Product = product,
-                        Price = product.Price,
-                        Quantity = item.Quantity,
-                        PriceAfterDiscount = item.PriceAfterDiscount,
-
-                    };
-                    _context.OrderItems.Add(orderItem);
-                    _context.SaveChanges();
-
-                    var order = new Order
-                    {
-                        CustomerName = model.CustomerName,
-                        Date = DateTime.Now,
-                        OrderCode = model.OrderCode,
-                        Total = (int)orderItem.Total
-                    };
-                    await _orderRepository.Add(order);
-
-                }
-
-                return RedirectToAction(nameof(Index));
-
+                    OrderId = order.OrderId,
+                    Price = (decimal)item.Price,
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                });
             }
-            catch
-            {
-                return View();
-            }
+
+            _context.SaveChanges();
+
+            return Json(new { code = "1" });
         }
 
         // GET: OrdersController/Edit/5

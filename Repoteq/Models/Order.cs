@@ -13,7 +13,7 @@ namespace Repoteq.Models
         public int OrderId { get; set; }
         public int OrderCode { get; set; }
         public string CustomerName { get; set; }
-        public int Total { get; set; }
+        public double Total { get; set; }
         public DateTime Date { get; set; }
 
         public virtual ICollection<OrderItem> Items { get; set; }
