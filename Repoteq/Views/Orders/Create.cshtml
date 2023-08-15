@@ -71,7 +71,7 @@
                 </div>
                 <div class="col-md-1">
                     <input type="button" id="add-item-btn" class="btn btn-primary" value="Add">
-                    @*<input type="button" id="update-item-btn" onclick="BtnUpdate()" class="btn btn-primary" value="update">*@
+                    <input type="button" id="update-item-btn" onclick="BtnUpdate()" class="btn btn-primary" value="update">
                 </div>
 
             </div>
@@ -261,8 +261,7 @@
         function BtnUpdate() {
             alert("mm")
             debugger;
-            var row = $('table tbody').closest('tr');
-
+            var row = $('#items-table').closest('tr');
 
             var productName = $('#txt-product').val();
             var price = $('#text-price').val();
@@ -270,10 +269,10 @@
             var total = $('#txt-total').val();
 
 
-            row.find('td:nth-child(2)').val($(productName).val());
-            row.find('td:nth-child(3)').text($(price).val());
-            row.find('td:nth-child(4)').text($(quantity).val());
-            row.find('td:nth-child(5)').text($(total).val());
+            row.find('td:nth-child(2)').val($(productName));
+            row.find('td:nth-child(3)').text($(price));
+            row.find('td:nth-child(4)').text($(quantity));
+            row.find('td:nth-child(5)').text($(total));
 
 
         }
@@ -303,7 +302,7 @@
                 items.push(rowObject);
             }
 
-            var customerName = 'test'; //$(this).find('#text-customerName').text();
+            var customerName = $('#text-customerName').val();
             var orderCode = '123456';   //$('')
 
 
