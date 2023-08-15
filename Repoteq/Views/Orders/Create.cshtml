@@ -23,14 +23,14 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label asp-for="OrderNumber" class="control-label"></label>
-                        <input asp-for="OrderNumber" class="form-control" />
+                        <input asp-for="OrderNumber" id="text-orderNumber" class="form-control" />
                         <span asp-validation-for="OrderNumber" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label asp-for="CustomerName" class="control-label"></label>
-                        <input asp-for="CustomerName" class="form-control" />
+                        <input asp-for="CustomerName" id="text-customerName" class="form-control" />
                         <span asp-validation-for="CustomerName" class="text-danger"></span>
 
                     </div>
@@ -71,6 +71,7 @@
                 </div>
                 <div class="col-md-1">
                     <input type="button" id="add-item-btn" class="btn btn-primary" value="Add">
+                    <input type="button" id="update-item-btn" onclick="BtnUpdate()" class="btn btn-primary" value="update">
                 </div>
 
             </div>
@@ -92,21 +93,16 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @*<tr>
-                            <td>1</td>
-                            <td>prod_1</td>
-                            <td>100</td>
-                            <td>1</td>
-                            <td>100</td>
-                            <td>
-                            <div class="form-group">
-                            <a href="#" class="btn btn-primary btn-sm"> Edit</a>
-                            <a href="#" class="btn btn-danger btn-sm"> Remove</a>
-                            </div>
-                            </td>
-                            </tr>*@
+                           
                         </tbody>
                     </table>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="total-sum-container">
+                                <h4>Total Sum: <span id="total-sum" ></span></h4>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -147,6 +143,17 @@
             var total = quantity * price;
             $('#txt-total').val(total);
         }
+
+
+        function updateTotalSum() {
+            var totalSum = 0;
+            $('table-body tr').each(function () {
+                const totalValue = parseFloat($(this).find('#txt-total').val());
+                totalSum += totalValue;
+            });
+            $('#total-sum').val(totalSum.toFixed(2));
+        }
+
 
         $(function () {
 
@@ -207,9 +214,7 @@
                     // Append the new row to the table body
                     $('table tbody').append(newRow);
 
-                    // Increment the item index
-                    //productId++;
-                    //$('table tbody').append(newRow);
+                    
 
                     // Clear the input fields
                     $('#txt-product').val('');
@@ -221,39 +226,19 @@
             $(document).on('click', '#edit-item-btn', function () {
 
                 var row = $(this).closest('tr');
-                var productId = row.find('td:nth-child(0)').val();
-                var productName = row.find('td:nth-child(1)').text();
-                var price = row.find('td:nth-child(3)').text();
-                var quantity = row.find('td:nth-child(4)').text();
+                var productId = $(row).find('td:nth-child(1)').text();
+                var productName = $(row).find('td:nth-child(2)').text();
+                var price = $(row).find('td:nth-child(3)').text();
+                var quantity = $(row).find('td:nth-child(4)').text();
 
-                // Set the edited item details in the input fields
-                $('#txt-product').val(productName);
+                // Bind the order item to the adding div
+                $('#txt-product').val(productId);
                 $('#text-price').val(price);
                 $('#txt-quantity').val(quantity);
-                CalculateTotal();
+                $('#txt-total').val(price * quantity);
+               
+            });
 
-                //$('#edit-item-btn').click(function () {
-                //    $('#add-item-btn').replaceWith("<input type="button" id="save - item - btn" class="btn btn - primary" value="Add">");
-
-                //})
-
-
-                $('#add-item-btn').val('Save').click(function () {
-                    if (row) {
-                        var productId = Id;
-                        var productName = $('#txt-product').val();
-                        var price = $('#text-price').val();
-                        var quantity = $('#txt-quantity').val();
-                        var total = $('#txt-total').val();
-
-
-                        row.find('td:nth-child(2)').text($('#txt-product').val());
-                        row.find('td:nth-child(3)').text($('#text-price').val());
-                        row.find('td:nth-child(4)').text($('#txt-quantity').val());
-                        row.find('td:nth-child(5)').text($('#txt-total').val());
-                    }
-                });
-            })
 
             $(document).on('click', '#remove-item-btn', function (e) {
                 e.preventDefault();
@@ -264,8 +249,28 @@
         })
 
 
-        function BtnSave() {
+        function BtnUpdate(){
+            alert("mm")
             debugger;
+            var row = $('table tbody').closest('tr');
+
+            
+            var productName = $('#txt-product').val();
+            var price = $('#text-price').val();
+            var quantity = $('#txt-quantity').val();
+            var total = $('#txt-total').val();
+
+
+            row.find('td:nth-child(2)').val($(productName).val());
+            row.find('td:nth-child(3)').text($(price).val());
+            row.find('td:nth-child(4)').text($(quantity).val());
+            row.find('td:nth-child(5)').text($(total).val());
+           
+
+        }
+
+        function BtnSave() {
+            
 
             var data;
             var items = [];
@@ -289,7 +294,7 @@
                 items.push(rowObject);
             }
 
-            var customerName = 'test';   //$('')
+            var customerName = 'test'; //$(this).find('#text-customerName').text();
             var orderCode = '123456';   //$('')
 
 
@@ -319,10 +324,7 @@
             });
 
 
-            //$.post('/Orders/SaveOrder',data, (res) => {
-            //            alert(JSON.stringify(res));
-            //});
-
+            
 
         }
 
