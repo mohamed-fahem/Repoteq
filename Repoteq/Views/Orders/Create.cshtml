@@ -148,7 +148,7 @@
         function updateTotalSum() {
             var totalSum = 0;
             $('table-body tr').each(function () {
-                const totalValue = parseFloat($(this).find('#txt-total').val());
+                var totalValue = parseFloat($(this).find('#txt-total').val());
                 totalSum += totalValue;
             });
             $('#total-sum').val(totalSum.toFixed(2));
