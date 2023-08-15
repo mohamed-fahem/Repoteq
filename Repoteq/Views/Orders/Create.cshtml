@@ -71,7 +71,7 @@
                 </div>
                 <div class="col-md-1">
                     <input type="button" id="add-item-btn" class="btn btn-primary" value="Add">
-                    <input type="button" id="update-item-btn" onclick="BtnUpdate()" class="btn btn-primary" value="update">
+                    @*<input type="button" id="update-item-btn" onclick="BtnUpdate()" class="btn btn-primary" value="update">*@
                 </div>
 
             </div>
@@ -145,7 +145,7 @@
 
 
         function updateTotalSum() {
-            
+
             var totalSum = 0;
 
             //$('table-body tr').each(function () {
@@ -162,10 +162,25 @@
         }
 
 
+        function RestAddForm() {
+
+
+            // Clear the input fields
+            $('#txt-product').val('');
+            $('#text-price').val('');
+            $('#txt-quantity').val('');
+            $('#txt-total').val('');
+            $('#add-item-btn').val("Add");
+
+        }
+
+
         $(function () {
 
             $(document).on('click', '#add-item-btn', function (e) {
                 e.preventDefault();
+
+
                 var selectedProduct = $('#txt-product option:selected');
                 var productId = selectedProduct.val();
                 var productName = selectedProduct.text();
@@ -173,60 +188,87 @@
                 var quantity = $('#txt-quantity').val();
                 var total = price * quantity;
 
-                // Check if a product is selected
-                if (selectedProduct.val() === '') {
-                    alert('Please select a product.');
-                    return;
-                }
 
-                // Validate price and quantity
-                if (price <= 0 || quantity <= 0) {
-                    alert('Price and quantity must be greater than 0.');
-                    return;
-                }
+                // Create a new table row with the item details
+                var newRow = $('<tr>');
+                newRow.append('<td>' + productId + '</td>');
+                newRow.append('<td>' + productName + '</td>');
+                newRow.append('<td>' + price + '</td>');
+                newRow.append('<td>' + quantity + '</td>');
+                newRow.append('<td>' + total + '</td>');
 
-                // Check if product is already added
-                var isProductAdded = false;
-                $('table tbody tr').each(function () {
-                    var existingProductName = $(this).find('td:nth-child(2)').text();
-                    if (existingProductName === productName) {
-                        isProductAdded = true;
-                        return false; // Exit the loop
+                // Add edit and remove buttons to the row
+                newRow.append('<td>' +
+                    '<div class="form-group">' +
+                    '<input type="button" id="edit-item-btn" class="btn btn-primary" value="Edit" />' +
+                    '<input type="button" id="remove-item-btn" class="btn btn-danger" value="Remove" />' +
+                    '</div>' + '</td></tr>');
+
+
+
+
+                if (this.value == "Save")  // edit
+                {
+                    // find row that contain order id.
+                    var trs = $('#items-table tr');
+                    for (var i = 1; i < trs.length; i++) {
+                        var trProdId = $(trs[i]).find('td:nth-child(1)').text();
+                        if (trProdId == productId)
+                        {
+                            $(trs[i]).replaceWith(newRow);
+                            break;
+                        }
                     }
-                });
-
-                if (isProductAdded) {
-                    alert('Product is already added.');
-                    return;
-                }
 
 
-                if (productName && price && quantity && total) {
-                    // Create a new table row with the item details
-                    var newRow = $('<tr>');
-                    newRow.append('<td>' + productId + '</td>');
-                    newRow.append('<td>' + productName + '</td>');
-                    newRow.append('<td>' + price + '</td>');
-                    newRow.append('<td>' + quantity + '</td>');
-                    newRow.append('<td>' + total + '</td>');
-
-                    // Add edit and remove buttons to the row
-                    newRow.append('<td>' +
-                        '<div class="form-group">' +
-                        '<input type="button" id="edit-item-btn" class="btn btn-primary" value="Edit" />' +
-                        '<input type="button" id="remove-item-btn" class="btn btn-danger" value="Remove" />' +
-                        '</div>' + '</td></tr>');
-
-                    // Append the new row to the table body
-                    $('table tbody').append(newRow);
+                    // create new row.
+                    // replace tr with new row.
+                    // update.
                     updateTotalSum();
 
+                    // rest form
+                    RestAddForm();
 
-                    // Clear the input fields
-                    $('#txt-product').val('');
-                    $('#text-price').val('');
-                    $('#txt-quantity').val('');
-                    $('#txt-total').val('');
+                } else {
+
+                    // Check if a product is selected
+                    if (selectedProduct.val() === '') {
+                        alert('Please select a product.');
+                        return;
+                    }
+
+                    // Validate price and quantity
+                    if (price <= 0 || quantity <= 0) {
+                        alert('Price and quantity must be greater than 0.');
+                        return;
+                    }
+
+                    // Check if product is already added
+                    var isProductAdded = false;
+                    $('table tbody tr').each(function () {
+                        var existingProductName = $(this).find('td:nth-child(2)').text();
+                        if (existingProductName === productName) {
+                            isProductAdded = true;
+                            return false; // Exit the loop
+                        }
+                    });
+
+                    if (isProductAdded) {
+                        alert('Product is already added.');
+                        return;
+                    }
+
+
+                    if (productName && price && quantity && total) {
+                        
+                        // Append the new row to the table body
+                        $('table tbody').append(newRow);
+                        updateTotalSum();
+
+                        RestAddForm();
+
+
+                    }
                 }
             });
 
@@ -244,6 +286,8 @@
                 $('#txt-quantity').val(quantity);
                 $('#txt-total').val(price * quantity);
 
+
+                $('#add-item-btn').val("Save");
             });
 
 
