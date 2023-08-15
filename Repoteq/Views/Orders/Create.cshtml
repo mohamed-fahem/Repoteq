@@ -71,7 +71,7 @@
                 </div>
                 <div class="col-md-1">
                     <input type="button" id="add-item-btn" class="btn btn-primary" value="Add">
-                    <input type="button" id="update-item-btn" onclick="BtnUpdate()" class="btn btn-primary" value="update">
+                    @*<input type="button" id="update-item-btn" onclick="BtnUpdate()" class="btn btn-primary" value="update">*@
                 </div>
 
             </div>
@@ -81,7 +81,7 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <table class="table">
+                    <table class="table" id="items-table">
                         <thead>
                             <tr style="background-color:lightblue;">
                                 <th>Product Id</th>
@@ -93,13 +93,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                           
                         </tbody>
                     </table>
                     <div class="row">
                         <div class="col-md-12">
                             <div class="total-sum-container">
-                                <h4>Total Sum: <span id="total-sum" ></span></h4>
+                                <h4>Total Sum: <span id="total-sum"></span></h4>
                             </div>
                         </div>
                     </div>
@@ -146,12 +145,20 @@
 
 
         function updateTotalSum() {
+            
             var totalSum = 0;
-            $('table-body tr').each(function () {
-                var totalValue = parseFloat($(this).find('#txt-total').val());
-                totalSum += totalValue;
-            });
-            $('#total-sum').val(totalSum.toFixed(2));
+
+            //$('table-body tr').each(function () {
+            //    var totalValue = parseFloat($(this).find('#txt-total').val());
+            //    totalSum += totalValue;
+            //});
+
+            var trs = $('#items-table tr');
+            for (var i = 1; i < trs.length; i++) {
+                var total = $(trs[i]).find('td:nth-child(5)').text();
+                totalSum += parseFloat(total);
+            }
+            $('#total-sum').html(totalSum);
         }
 
 
@@ -206,15 +213,14 @@
                     // Add edit and remove buttons to the row
                     newRow.append('<td>' +
                         '<div class="form-group">' +
-                        '<input type="button" id="edit-item-btn" class="btn btn-primary" value="Edit">' +
-                        '<input type="button" id="remove-item-btn" class="btn btn-danger" value="Remove">' +
-                        '</div>' +
-                        '</td>');
+                        '<input type="button" id="edit-item-btn" class="btn btn-primary" value="Edit" />' +
+                        '<input type="button" id="remove-item-btn" class="btn btn-danger" value="Remove" />' +
+                        '</div>' + '</td></tr>');
 
                     // Append the new row to the table body
                     $('table tbody').append(newRow);
+                    updateTotalSum();
 
-                    
 
                     // Clear the input fields
                     $('#txt-product').val('');
@@ -223,6 +229,7 @@
                     $('#txt-total').val('');
                 }
             });
+
             $(document).on('click', '#edit-item-btn', function () {
 
                 var row = $(this).closest('tr');
@@ -236,25 +243,27 @@
                 $('#text-price').val(price);
                 $('#txt-quantity').val(quantity);
                 $('#txt-total').val(price * quantity);
-               
+
             });
+
 
 
             $(document).on('click', '#remove-item-btn', function (e) {
                 e.preventDefault();
                 $(this).closest('tr').remove();
+                updateTotalSum();
             });
 
 
         })
 
 
-        function BtnUpdate(){
+        function BtnUpdate() {
             alert("mm")
             debugger;
             var row = $('table tbody').closest('tr');
 
-            
+
             var productName = $('#txt-product').val();
             var price = $('#text-price').val();
             var quantity = $('#txt-quantity').val();
@@ -265,12 +274,12 @@
             row.find('td:nth-child(3)').text($(price).val());
             row.find('td:nth-child(4)').text($(quantity).val());
             row.find('td:nth-child(5)').text($(total).val());
-           
+
 
         }
 
         function BtnSave() {
-            
+
 
             var data;
             var items = [];
@@ -305,13 +314,13 @@
             };
             //var strData = JSON.stringify(data);
 
-           // data = `OrderNumber=${orderCode}&CustomerName=${customerName}&Items=${items}`;
+            // data = `OrderNumber=${orderCode}&CustomerName=${customerName}&Items=${items}`;
 
             SubmitSave(data);
         }
 
         function SubmitSave(data) {
-            
+
             $.ajax({
                 url: '/Orders/SaveOrder',
                 type: 'POST',
@@ -324,9 +333,11 @@
             });
 
 
-            
+
 
         }
+
+
 
 
 
