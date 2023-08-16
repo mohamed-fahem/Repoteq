@@ -1,7 +1,7 @@
-﻿@model Repoteq.ViewModel.Orders.AddOrderViewModel
+﻿@model Repoteq.ViewModel.Orders.EditOrderViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Edit";
 }
 <style>
     .form-group-material {
@@ -18,6 +18,8 @@
     <div class="col-md-6">
         <form asp-action="Create" id="add-order-form">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" asp-for="OrderId" />
 
             <div class="row">
                 <div class="col-md-6">
@@ -123,8 +125,6 @@
 </div>
 
 
-
-
 @section Scripts {
     <script>
 
@@ -148,7 +148,7 @@
 
             var totalSum = 0;
 
-            
+
 
             var trs = $('#items-table tr');
             for (var i = 1; i < trs.length; i++) {
@@ -210,8 +210,7 @@
                     var trs = $('#items-table tr');
                     for (var i = 1; i < trs.length; i++) {
                         var trProdId = $(trs[i]).find('td:nth-child(1)').text();
-                        if (trProdId == productId)
-                        {
+                        if (trProdId == productId) {
                             $(trs[i]).replaceWith(newRow);
                             break;
                         }
@@ -257,7 +256,7 @@
 
 
                     if (productName && price && quantity && total) {
-                        
+
                         // Append the new row to the table body
                         $('table tbody').append(newRow);
                         updateTotalSum();
@@ -332,7 +331,7 @@
             data = {
                 'OrderNumber': orderCode,
                 'CustomerName': customerName,
-                'Items': items
+                //'Items': items
             };
             //var strData = JSON.stringify(data);
 
@@ -344,7 +343,7 @@
         function SubmitSave(data) {
 
             $.ajax({
-                url: '/Orders/SaveOrder',
+                url: '/Orders/SaveEdit',
                 type: 'POST',
                 data: data,
                 success: function (data) {
@@ -366,8 +365,3 @@
 
     </script>
 }
-
-
-@*@{
-    await Html.RenderPartialAsync("_ValidationScriptsPartial");
-}*@

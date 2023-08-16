@@ -26,21 +26,6 @@ namespace Repoteq.Controllers
         }
 
 
-        public IActionResult AddMorePartialView()
-        {
-
-            OrderItem model = new OrderItem();
-            return PartialView("View", model);
-        }
-
-
-        //public IActionResult orderItemTable(int? productId)
-        //{
-
-        //}
-
-
-
         // GET: OrdersController
         public async Task<IActionResult> Index()
         {
@@ -116,63 +101,90 @@ namespace Repoteq.Controllers
         {
             if (id == null) return NotFound();
 
-            var getorder = await _orderRepository.GetById(id);
-            if (getorder == null) return NotFound();
+            var order = await _context.Orders.Include(a => a.Items).FirstOrDefaultAsync(a => a.OrderId == id);
+            
+            
+            if (order == null) return NotFound();
 
-
-
-
-            var order = new Order
+            var model = new EditOrderViewModel
             {
-                CustomerName = getorder.CustomerName,
-                OrderCode = getorder.OrderCode,
-                Items = (ICollection<OrderItem>)getorder.Items.Select(item => new OrderItem
-                {
-                    Price = item.Price,
-                    Quantity = item.Quantity,
-                    Product = item.Product,
-                    PriceAfterDiscount = item.PriceAfterDiscount
-                })
+                OrderId =order.OrderId,
+                CustomerName = order.CustomerName,
+                OrderNumber =order.OrderCode,
+                //ListProducts = _context.Products.Select(s => new SelectListItem
+                //{
+                //    Text = s.ProductName,
+                //    Value = s.ProductId.ToString()
+                //}).ToList(),
+
+                //OrderItemsList = order.Items.ToList(),
+                
+                
             };
 
 
+            //var order = new Order
+            //{
+            //    CustomerName = getorder.CustomerName,
+            //    OrderCode = getorder.OrderCode,
+            //    Items = (ICollection<OrderItem>)getorder.Items.Select(item => new OrderItem
+            //    {
+            //        Price = item.Price,
+            //        Quantity = item.Quantity,
+            //        Product = item.Product,
+            //        PriceAfterDiscount = item.PriceAfterDiscount
+            //    })
+            //};
 
-            return View(order);
+
+
+            return View(model);
         }
 
         // POST: OrdersController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Order model)
+        public async Task<IActionResult> SaveEdit(EditOrderViewModel model)
         {
             try
             {
-                var product = await _productRepository.GetById(model.OrderId);
 
-                foreach (var item in model.Items)
+                var order = new Order
                 {
-                    var orderItem = new OrderItem
-                    {
-                        Product = product,
-                        Price = product.Price,
-                        Quantity = item.Quantity,
-                        PriceAfterDiscount = item.PriceAfterDiscount,
+                    OrderId = model.OrderId,
+                    CustomerName = model.CustomerName,
+                    OrderCode= model.OrderNumber,
+                    
+                };
 
-                    };
-                    _context.OrderItems.Add(orderItem);
-                    _context.SaveChanges();
+                _context.Orders.Update(order);
+                _context.SaveChanges();
 
-                    var order = new Order
-                    {
-                        CustomerName = model.CustomerName,
-                        Date = DateTime.Now,
-                        OrderCode = model.OrderCode,
-                        Total = (int)orderItem.Total
-                    };
-                    _orderRepository.Update(order);
 
-                }
-                return RedirectToAction(nameof(Index));
+                //foreach (var item in model.Items)
+                //{
+                //    var orderItem = new OrderItem
+                //    {
+                //        Product = product,
+                //        Price = product.Price,
+                //        Quantity = item.Quantity,
+                //        PriceAfterDiscount = item.PriceAfterDiscount,
+
+                //    };
+                //    _context.OrderItems.Add(orderItem);
+                //    _context.SaveChanges();
+
+                //    var order = new Order
+                //    {
+                //        CustomerName = model.CustomerName,
+                //        Date = DateTime.Now,
+                //        OrderCode = model.OrderCode,
+                //        Total = (int)orderItem.Total
+                //    };
+                //    _orderRepository.Update(order);
+
+                //}
+                return Json(new { code = "1" });
             }
             catch
             {
