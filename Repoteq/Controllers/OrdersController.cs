@@ -111,30 +111,19 @@ namespace Repoteq.Controllers
                 OrderId =order.OrderId,
                 CustomerName = order.CustomerName,
                 OrderNumber =order.OrderCode,
-                //ListProducts = _context.Products.Select(s => new SelectListItem
-                //{
-                //    Text = s.ProductName,
-                //    Value = s.ProductId.ToString()
-                //}).ToList(),
+                ListProducts = _context.Products.Select(s => new SelectListItem
+                {
+                    Text = s.ProductName,
+                    Value = s.ProductId.ToString()
+                }).ToList(),
 
-                //OrderItemsList = order.Items.ToList(),
-                
-                
+                OrderItemsList = order.Items.ToList(),
+
+
             };
 
             return View(model);
-            //var order = new Order
-            //{
-            //    CustomerName = getorder.CustomerName,
-            //    OrderCode = getorder.OrderCode,
-            //    Items = (ICollection<OrderItem>)getorder.Items.Select(item => new OrderItem
-            //    {
-            //        Price = item.Price,
-            //        Quantity = item.Quantity,
-            //        Product = item.Product,
-            //        PriceAfterDiscount = item.PriceAfterDiscount
-            //    })
-            //};
+            
 
 
 
@@ -162,29 +151,7 @@ namespace Repoteq.Controllers
                 _context.SaveChanges();
 
 
-                //foreach (var item in model.Items)
-                //{
-                //    var orderItem = new OrderItem
-                //    {
-                //        Product = product,
-                //        Price = product.Price,
-                //        Quantity = item.Quantity,
-                //        PriceAfterDiscount = item.PriceAfterDiscount,
-
-                //    };
-                //    _context.OrderItems.Add(orderItem);
-                //    _context.SaveChanges();
-
-                //    var order = new Order
-                //    {
-                //        CustomerName = model.CustomerName,
-                //        Date = DateTime.Now,
-                //        OrderCode = model.OrderCode,
-                //        Total = (int)orderItem.Total
-                //    };
-                //    _orderRepository.Update(order);
-
-                //}
+                
                 return Json(new { code = "1" });
             }
             catch
