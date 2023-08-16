@@ -122,7 +122,7 @@ namespace Repoteq.Controllers
                 
             };
 
-
+            return View(model);
             //var order = new Order
             //{
             //    CustomerName = getorder.CustomerName,
@@ -138,13 +138,14 @@ namespace Repoteq.Controllers
 
 
 
-            return View(model);
+
         }
 
         // POST: OrdersController/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        
         public async Task<IActionResult> SaveEdit(EditOrderViewModel model)
+        
         {
             try
             {

@@ -16,7 +16,7 @@
 <div class="row">
     <div class="col-md-3"></div>
     <div class="col-md-6">
-        <form asp-action="Create" id="add-order-form">
+        <form asp-action="SaveEdit" id="add-order-form">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <input type="hidden" asp-for="OrderId" />
@@ -326,11 +326,13 @@
 
             var customerName = $('#text-customerName').val();
             var orderCode = $('#text-orderNumber').val();
+            var OrderId = $('#OrderId').val();
 
 
             data = {
                 'OrderNumber': orderCode,
                 'CustomerName': customerName,
+                'OrderId': OrderId,
                 //'Items': items
             };
             //var strData = JSON.stringify(data);
