@@ -95,6 +95,31 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @foreach (var item in Model.OrderItemsList) {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(m =>item.ProductId)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Product.ProductName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Price)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Quantity)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Total)
+                                </td>
+                                <td>
+                                     <input type="button" id="edit-item-btn" class="btn btn-primary" value="Edit" />
+                                     <input type="button" id="remove-item-btn" class="btn btn-danger" value="Remove" />
+                                </td>
+
+                               
+                            </tr>
+                            }
                         </tbody>
                     </table>
                     <div class="row">
@@ -148,8 +173,6 @@
 
             var totalSum = 0;
 
-
-
             var trs = $('#items-table tr');
             for (var i = 1; i < trs.length; i++) {
                 var total = $(trs[i]).find('td:nth-child(5)').text();
@@ -199,7 +222,8 @@
                     '<div class="form-group">' +
                     '<input type="button" id="edit-item-btn" class="btn btn-primary" value="Edit" />' +
                     '<input type="button" id="remove-item-btn" class="btn btn-danger" value="Remove" />' +
-                    '</div>' + '</td></tr>');
+                    '</div>' + '</td></tr>'
+                );
 
 
 
@@ -297,7 +321,7 @@
 
         })
 
-
+        
 
         function BtnSave() {
 
@@ -333,7 +357,7 @@
                 'OrderNumber': orderCode,
                 'CustomerName': customerName,
                 'OrderId': OrderId,
-                //'Items': items
+                'Items': items
             };
             //var strData = JSON.stringify(data);
 

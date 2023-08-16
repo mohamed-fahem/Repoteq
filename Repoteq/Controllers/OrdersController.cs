@@ -101,7 +101,7 @@ namespace Repoteq.Controllers
         {
             if (id == null) return NotFound();
 
-            var order = await _context.Orders.Include(a => a.Items).FirstOrDefaultAsync(a => a.OrderId == id);
+            var order = await _context.Orders.Include(a => a.Items).ThenInclude(a => a.Product).FirstOrDefaultAsync(a => a.OrderId == id);
             
             
             if (order == null) return NotFound();
@@ -118,7 +118,8 @@ namespace Repoteq.Controllers
                 }).ToList(),
 
                 OrderItemsList = order.Items.ToList(),
-
+                
+                
 
             };
 
@@ -144,14 +145,26 @@ namespace Repoteq.Controllers
                     OrderId = model.OrderId,
                     CustomerName = model.CustomerName,
                     OrderCode= model.OrderNumber,
-                    
+                    Total = (double)model.OrderItemsList.Select(s => s.Quantity * s.Price).Sum()
                 };
 
                 _context.Orders.Update(order);
                 _context.SaveChanges();
 
+                foreach (var item in model.OrderItemsList)
+                {
+                    _context.OrderItems.Update(new OrderItem
+                    {
+                        OrderId = order.OrderId,
+                        Price = (decimal)item.Price,
+                        ProductId = item.ProductId,
+                        Quantity = item.Quantity,
+                    });
+                }
+                _context.SaveChanges();
 
-                
+
+
                 return Json(new { code = "1" });
             }
             catch

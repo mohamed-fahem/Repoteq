@@ -21,7 +21,7 @@ namespace Repoteq.Models
                 return Quantity * PriceAfterDiscount ?? Price;
             }
         }
-
+         
 
         public virtual Product Product { get; set; }
         public virtual Order Order { get; set; }
