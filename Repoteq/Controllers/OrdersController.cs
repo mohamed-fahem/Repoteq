@@ -134,43 +134,36 @@ namespace Repoteq.Controllers
         // POST: OrdersController/Edit/5
         [HttpPost]
         
-        public async Task<IActionResult> SaveEdit(EditOrderViewModel model)
+        public async Task<IActionResult> SaveEdit(EditOrderDTO model)
         
         {
-            try
+            var order = new Order
             {
+                OrderId=model.OrderId,
+                CustomerName = model.CustomerName,
+                Date = DateTime.Now,
+                OrderCode = int.Parse(model.OrderNumber),
+                Total = model.Items.Select(s => s.Quantity * s.Price).Sum(),
 
-                var order = new Order
-                {
-                    OrderId = model.OrderId,
-                    CustomerName = model.CustomerName,
-                    OrderCode= model.OrderNumber,
-                    Total = (double)model.OrderItemsList.Select(s => s.Quantity * s.Price).Sum()
-                };
-
-                _context.Orders.Add(order);
-                _context.SaveChanges();
-
-                foreach (var item in model.OrderItemsList)
-                {
-                    _context.OrderItems.Add(new OrderItem
-                    {
-                        OrderId = order.OrderId,
-                        Price = (decimal)item.Price,
-                        ProductId = item.ProductId,
-                        Quantity = item.Quantity,
-                    });
-                }
-                _context.SaveChanges();
+            };
+            _context.Orders.Update(order);
+            _context.SaveChanges();
 
 
-
-                return Json(new { code = "1" });
-            }
-            catch
+            foreach (var item in model.Items)
             {
-                return View();
+                _context.OrderItems.Update(new OrderItem
+                {
+                    OrderId = order.OrderId,
+                    Price = (decimal)item.Price,
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                });
             }
+
+            _context.SaveChanges();
+
+            return Json(new { code = "1" });
         }
 
         // GET: OrdersController/Delete/5

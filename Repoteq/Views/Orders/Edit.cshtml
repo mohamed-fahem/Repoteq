@@ -353,7 +353,7 @@
         }
 
         function BtnSave() {
-
+            debugger;
 
             var data;
             var items = [];
@@ -383,9 +383,9 @@
 
 
             data = {
+                'OrderId': OrderId,
                 'OrderNumber': orderCode,
                 'CustomerName': customerName,
-                'OrderId': OrderId,
                 'Items': items
             };
             //var strData = JSON.stringify(data);
