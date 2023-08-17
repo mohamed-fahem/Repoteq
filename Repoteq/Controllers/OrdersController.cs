@@ -148,12 +148,12 @@ namespace Repoteq.Controllers
                     Total = (double)model.OrderItemsList.Select(s => s.Quantity * s.Price).Sum()
                 };
 
-                _context.Orders.Update(order);
+                _context.Orders.Add(order);
                 _context.SaveChanges();
 
                 foreach (var item in model.OrderItemsList)
                 {
-                    _context.OrderItems.Update(new OrderItem
+                    _context.OrderItems.Add(new OrderItem
                     {
                         OrderId = order.OrderId,
                         Price = (decimal)item.Price,
