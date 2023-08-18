@@ -16,12 +16,9 @@ namespace Repoteq.Models
 
         public decimal Total
         {
-            get
-            {
-                return Quantity * PriceAfterDiscount ?? Price;
-            }
+            get { return (Quantity * (PriceAfterDiscount ?? Price)); }
         }
-         
+
 
         public virtual Product Product { get; set; }
         public virtual Order Order { get; set; }

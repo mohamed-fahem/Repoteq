@@ -101,45 +101,41 @@ namespace Repoteq.Controllers
         {
             if (id == null) return NotFound();
 
-            var order = await _context.Orders.Include(a => a.Items).ThenInclude(a => a.Product).FirstOrDefaultAsync(a => a.OrderId == id);
-            
-            
+            var order = await _context.Orders
+                .Include(a => a.Items)
+                .ThenInclude(a => a.Product)
+                .FirstOrDefaultAsync(a => a.OrderId == id);
+
+
             if (order == null) return NotFound();
 
             var model = new EditOrderViewModel
             {
-                OrderId =order.OrderId,
+                OrderId = order.OrderId,
                 CustomerName = order.CustomerName,
-                OrderNumber =order.OrderCode,
+                OrderNumber = order.OrderCode,
+                FinalTotal=(decimal)order.Total,
                 ListProducts = _context.Products.Select(s => new SelectListItem
                 {
                     Text = s.ProductName,
                     Value = s.ProductId.ToString()
                 }).ToList(),
-
-                OrderItemsList = order.Items.ToList(),
-                
-                
-
+                OrderItemsList = order.Items.ToList()
             };
 
             return View(model);
-            
-
-
-
 
         }
 
         // POST: OrdersController/Edit/5
         [HttpPost]
-        
+
         public async Task<IActionResult> SaveEdit(EditOrderDTO model)
-        
+
         {
             var order = new Order
             {
-                OrderId=model.OrderId,
+                OrderId = model.OrderId,
                 CustomerName = model.CustomerName,
                 Date = DateTime.Now,
                 OrderCode = int.Parse(model.OrderNumber),
@@ -150,9 +146,14 @@ namespace Repoteq.Controllers
             _context.SaveChanges();
 
 
+
+            // delete old items
+            _context.RemoveRange(_context.OrderItems.Where(x => x.OrderId == model.OrderId).ToList());
+
+            // add new items
             foreach (var item in model.Items)
             {
-                _context.OrderItems.Update(new OrderItem
+                _context.OrderItems.Add(new OrderItem
                 {
                     OrderId = order.OrderId,
                     Price = (decimal)item.Price,
@@ -160,11 +161,12 @@ namespace Repoteq.Controllers
                     Quantity = item.Quantity,
                 });
             }
-
             _context.SaveChanges();
 
             return Json(new { code = "1" });
         }
+
+
 
         // GET: OrdersController/Delete/5
         public async Task<IActionResult> Delete(int id)

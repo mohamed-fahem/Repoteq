@@ -113,7 +113,7 @@
                                     @Html.DisplayFor(modelItem => item.Total)
                                 </td>
                                 <td>
-                                        <input type="button" onclick="BtnEdit()" class="btn btn-primary" value="Edit" />
+                                        <input type="button" onclick="BtnEdit(this)" class="btn btn-primary" value="Edit" />
                                      <input type="button" id="remove-item-btn" class="btn btn-danger" value="Remove" />
                                 </td>
 
@@ -125,7 +125,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="total-sum-container">
-                                <h4>Total Sum: <span id="total-sum"></span></h4>
+                                <h4>Total Sum: <span id="total-sum">@Model.FinalTotal</span></h4>
                             </div>
                         </div>
                     </div>
@@ -233,7 +233,7 @@
                     // find row that contain order id.
                     var trs = $('#items-table tr');
                     for (var i = 1; i < trs.length; i++) {
-                        var trProdId = $(trs[i]).find('td:nth-child(1)').text();
+                        var trProdId = parseInt($(trs[i]).find('td:nth-child(1)').text());
                         if (trProdId == productId) {
                             $(trs[i]).replaceWith(newRow);
                             break;
@@ -249,7 +249,10 @@
                     // rest form
                     RestAddForm();
 
-                } else {
+                } 
+                
+                
+                else {  // add new record.
 
                     // Check if a product is selected
                     if (selectedProduct.val() === '') {
@@ -292,8 +295,14 @@
                 }
             });
 
-            $(document).on('click', '#edit-item-btn', function () {
 
+            // ------------------------ end  add - save  button function -----------------------------------------------
+
+
+
+
+            $(document).on('click', '#edit-item-btn', function () {
+                
                 var row = $(this).closest('tr');
                 var productId = $(row).find('td:nth-child(1)').text();
                 var productName = $(row).find('td:nth-child(2)').text();
@@ -319,15 +328,18 @@
             });
 
 
+
+
+
         })
 
-        function BtnEdit(){
+        function BtnEdit(btn){
             debugger;
-            var row = $(this).closest('#items-table').children('tr:eq(1)');
-            var productId = parseFloat($('td:eq(0)').text());
-            var productName = $('td:eq(1)').text();
-            var price = parseFloat($('td:eq(2)').text());
-            var quantity = parseFloat($('td:eq(3)').text());
+            var row = $(btn).closest('tr');  //$(this).closest('#items-table').children('tr:eq(1)');
+            var productId = parseFloat($(row).find('td:eq(0)').text());
+            var productName = $(row).find('td:eq(1)').text();
+            var price = parseFloat($(row).find('td:eq(2)').text());
+            var quantity = parseFloat($(row).find('td:eq(3)').text());
 
             // Bind the order item to the adding div
             $('#txt-product').val(productId);
@@ -337,24 +349,9 @@
 
             $('#add-item-btn').val("Save");
 
-            if ($('#add-item-btn').val() == "Save") {  
-                var newRow = $('<tr><td>' + productId + '</td><td>' + productName + '</td><td>' + price + '</td><td>' + quantity + '</td></tr>');
-
-                var rows = $('#items-table').find('tr');  // Get all rows in the table
-                for (var i = 1; i < rows.length; i++) {
-                    var trProdId = $(rows[i]).find('td:nth-child(1)').text();
-                    if (trProdId == productId) {
-                        $(rows[i]).replaceWith(newRow);
-                        break;
-                    }
-                }
-                updateTotalSum();
-            }
         }
 
         function BtnSave() {
-            debugger;
-
             var data;
             var items = [];
 

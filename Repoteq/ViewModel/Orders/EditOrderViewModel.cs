@@ -11,9 +11,9 @@ namespace Repoteq.ViewModel.Orders
         public string CustomerName { get; set; }
         public int OrderNumber { get; set; }
 
+        public decimal FinalTotal { get; set; }
 
 
-        
 
         public IEnumerable<SelectListItem> ListProducts { get; set; }
 
