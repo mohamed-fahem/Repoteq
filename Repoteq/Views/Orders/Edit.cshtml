@@ -113,7 +113,7 @@
                                     @Html.DisplayFor(modelItem => item.Total)
                                 </td>
                                 <td>
-                                     <input type="button" id="edit-item-btn" class="btn btn-primary" value="Edit" />
+                                        <input type="button" onclick="BtnEdit()" class="btn btn-primary" value="Edit" />
                                      <input type="button" id="remove-item-btn" class="btn btn-danger" value="Remove" />
                                 </td>
 
@@ -321,15 +321,44 @@
 
         })
 
-        
+        function BtnEdit(){
+            debugger;
+            var row = $(this).closest('#items-table').children('tr:eq(1)');
+            var productId = parseFloat($('td:eq(0)').text());
+            var productName = $('td:eq(1)').text();
+            var price = parseFloat($('td:eq(2)').text());
+            var quantity = parseFloat($('td:eq(3)').text());
+
+            // Bind the order item to the adding div
+            $('#txt-product').val(productId);
+            $('#text-price').val(price);
+            $('#txt-quantity').val(quantity);
+            $('#txt-total').val(price * quantity);
+
+            $('#add-item-btn').val("Save");
+
+            if ($('#add-item-btn').val() == "Save") {  
+                var newRow = $('<tr><td>' + productId + '</td><td>' + productName + '</td><td>' + price + '</td><td>' + quantity + '</td></tr>');
+
+                var rows = $('#items-table').find('tr');  // Get all rows in the table
+                for (var i = 1; i < rows.length; i++) {
+                    var trProdId = $(rows[i]).find('td:nth-child(1)').text();
+                    if (trProdId == productId) {
+                        $(rows[i]).replaceWith(newRow);
+                        break;
+                    }
+                }
+                updateTotalSum();
+            }
+        }
 
         function BtnSave() {
-
+            debugger;
 
             var data;
             var items = [];
 
-            var rows = $('table tr');
+            var rows = $('#items-table tr');
             for (var i = 1; i < rows.length; i++) {
 
                 var prodId = $($(rows[i]).find('td:eq(0)')).text();
@@ -354,9 +383,9 @@
 
 
             data = {
+                'OrderId': OrderId,
                 'OrderNumber': orderCode,
                 'CustomerName': customerName,
-                'OrderId': OrderId,
                 'Items': items
             };
             //var strData = JSON.stringify(data);
