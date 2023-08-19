@@ -197,11 +197,39 @@ namespace Repoteq.Controllers
         }
 
 
-        public IActionResult Search(string term)
+        public async Task<IActionResult> Search(OrderSearchViewModel searchModel)
         {
-            var result = _orderRepository.Search(term);
+            var orders = await _orderRepository.GetAll();
 
-            return View("Index", result);
+            // Apply filters based on the search model properties
+
+            if (searchModel.OrderNumber.HasValue)
+            {
+                orders = orders.Where(o => o.OrderCode == searchModel.OrderNumber.Value);
+            }
+
+            if (!string.IsNullOrEmpty(searchModel.CustomerName))
+            {
+                orders = orders.Where(o => o.CustomerName.Contains(searchModel.CustomerName));
+            }
+
+            if (searchModel.Total.HasValue)
+            {
+                orders = orders.Where(o => o.Total == searchModel.Total.Value);
+            }
+
+            if (searchModel.FromDate.HasValue)
+            {
+                orders = orders.Where(o => o.Date >= searchModel.FromDate.Value);
+            }
+
+            if (searchModel.ToDate.HasValue)
+            {
+                orders = orders.Where(o => o.Date <= searchModel.ToDate.Value);
+            }
+
+            
+            return View("Index", orders.ToList());
         }
     }
 }

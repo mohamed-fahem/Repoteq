@@ -7,7 +7,6 @@
         Task<TEntity> Add(TEntity entity);
         TEntity Update(TEntity entity);
         TEntity Delete(TEntity entity);
-        IEnumerable<TEntity> Search(string term);
         IQueryable<TEntity> GetNoTranckingTable();
     }
 }

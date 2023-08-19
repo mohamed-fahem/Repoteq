@@ -44,11 +44,7 @@ namespace Repoteq.Repositories.Implementations
             return _context.Products.AsNoTracking();
         }
 
-        public IEnumerable<Product> Search(string term)
-        {
-            return _context.Products.Where(s => s.ProductName.Contains(term));
-            
-        }
+        
 
         public Product Update(Product product)
         {

@@ -45,13 +45,7 @@ namespace Repoteq.Repositories.Implementations
             return order;
         }
 
-        public IEnumerable<Order> Search(string term)
-        {
-            var result = _context.Orders.Where(b => b.CustomerName.Contains(term));
-                        
-
-            return result;
-        }
+        
 
         public IQueryable<Order> GetNoTranckingTable()
         {

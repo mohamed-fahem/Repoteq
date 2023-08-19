@@ -151,12 +151,12 @@ namespace Repoteq.Controllers
 
 
 
-        public IActionResult Search(string term)
-        {
-            var result = _productRepository.Search(term);
+        //public IActionResult Search(string term)
+        //{
+        //    var result = _productRepository.Search(term);
 
-            return View("Index", result);
-        }
+        //    return View("Index", result);
+        //}
 
 
 
