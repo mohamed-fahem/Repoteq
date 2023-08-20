@@ -6,6 +6,7 @@ using Repoteq.Data;
 using Repoteq.Models;
 using Repoteq.Repositories.interfaces;
 using Repoteq.ViewModel.Orders;
+using X.PagedList;
 
 namespace Repoteq.Controllers
 {
@@ -27,10 +28,15 @@ namespace Repoteq.Controllers
 
 
         // GET: OrdersController
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page)
         {
             var orders = await _orderRepository.GetAll();
-            return View(orders);
+            int pageNumber = page ?? 1;
+            int pageSize = 5;
+
+            var pagedOrders = orders.ToPagedList(pageNumber, pageSize);
+
+            return View(pagedOrders);
         }
 
         // GET: OrdersController/Details/5

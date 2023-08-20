@@ -1,10 +1,14 @@
-﻿@model IEnumerable<Repoteq.Models.Order>
+﻿@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@model IPagedList<Repoteq.Models.Order>
 
 @{
     ViewData["Title"] = "Index";
 }
 
 <h1>Index</h1>
+
+
 
 <form class="d-flex" asp-action="Search" asp-controller="Orders" method="get">
 
@@ -43,16 +47,16 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.OrderCode)
+                OrderCode
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CustomerName)
+                CustomerName
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Total)
+                Total
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Date)
+                Date
             </th>
             <th>
                 Action
@@ -96,8 +100,20 @@
     </tbody>
 </table>
 
+@Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page = page }),
+    new X.PagedList.Mvc.Common.PagedListRenderOptionsBase
+    {
+        DisplayItemSliceAndTotal = true,
+        ContainerDivClasses = new[] { "navigation" },
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" },
+    })
+
 @section Scripts {
     <script>
+        $(document).ready(function () {
+            $('ul.pagination > li.disabled > a').addClass('page-link');
+        });
         $(document).ready(function () {
             $('.datepicker').datepicker({
                 format: 'yyyy-mm-dd',
