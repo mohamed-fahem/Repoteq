@@ -235,7 +235,7 @@ namespace Repoteq.Controllers
             }
 
             
-            return View("Index", orders.ToList());
+            return View("Index", orders.ToPagedList());
         }
     }
 }

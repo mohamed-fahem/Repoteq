@@ -14,27 +14,27 @@
 
     <div class="form-group">
         <label for="OrderNumber">Order Number</label>
-        <input class="form-control me-sm-2" name="OrderNumber" type="number" placeholder="Order Number">
+        <input class="form-control me-sm-2" id="OrderNumber" name="OrderNumber" type="number" placeholder="Order Number">
     </div>
 
     <div class="form-group">
         <label for="CustomerName">Customer Name</label>
-        <input class="form-control me-sm-2" name="CustomerName" type="text" placeholder="Customer Name" >
+        <input class="form-control me-sm-2" id="CustomerName" name="CustomerName" type="text" placeholder="Customer Name">
     </div>
 
     <div class="form-group">
         <label for="Total">Total</label>
-        <input class="form-control me-sm-2" name="Total" type="number" placeholder="Total">
+        <input class="form-control me-sm-2" id="Total" name="Total" type="number" placeholder="Total">
     </div>
 
     <div class="form-group">
         <label for="FromDate">From Date</label>
-        <input class="form-control me-sm-2 datepicker" name="FromDate" type="date">
+        <input class="form-control me-sm-2 datepicker" id="FromDate" name="FromDate" type="date">
     </div>
 
     <div class="form-group">
         <label for="ToDate">To Date</label>
-        <input class="form-control me-sm-2 datepicker" name="ToDate" type="date" placeholder="To Date">
+        <input class="form-control me-sm-2 datepicker" id="ToDate" name="ToDate" type="date" placeholder="To Date">
     </div>
 
     <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
@@ -111,13 +111,43 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function () {
+        $(function () {
             $('ul.pagination > li.disabled > a').addClass('page-link');
         });
-        $(document).ready(function () {
+
+        $(function () {
             $('.datepicker').datepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true
+            });
+        });
+
+        $(function () {
+            // Retrieve the search input values from the query string
+            var searchParams = new URLSearchParams(window.location.search);
+
+            // Set the values of the corresponding textboxes
+            $('#OrderNumber').val(searchParams.get('OrderNumber'));
+            $('#CustomerName').val(searchParams.get('CustomerName'));
+            $('#Total').val(searchParams.get('Total'));
+            $('#FromDate').val(searchParams.get('FromDate'));
+            $('#ToDate').val(searchParams.get('ToDate'));
+
+            // Watch for changes in the textboxes
+            $('.form-control').on('input', function () {
+                // Check if all textboxes are empty
+                var allEmpty = true;
+                $('.form-control').each(function () {
+                    if ($(this).val().trim() !== '') {
+                        allEmpty = false;
+                        return false; 
+                    }
+                });
+
+                // If all textboxes are empty, reload the page without any search parameters and with the first page of pagination
+                if (allEmpty) {
+                    window.location.href = window.location.origin + '/Orders?page=1';
+                }
             });
         });
     </script>
