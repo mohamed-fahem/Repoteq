@@ -203,7 +203,7 @@ namespace Repoteq.Controllers
         }
 
 
-        public async Task<IActionResult> Search(OrderSearchViewModel searchModel)
+        public async Task<IActionResult> Search(OrderSearchViewModel searchModel, int? page)
         {
             var orders = await _orderRepository.GetAll();
 
@@ -234,8 +234,12 @@ namespace Repoteq.Controllers
                 orders = orders.Where(o => o.Date <= searchModel.ToDate.Value);
             }
 
-            
-            return View("Index", orders.ToPagedList());
+            int pageNumber = page ?? 1;
+            int pageSize = 5;
+
+            var pagedOrders = orders.ToPagedList(pageNumber, pageSize);
+
+            return View("Index", pagedOrders);
         }
     }
 }
