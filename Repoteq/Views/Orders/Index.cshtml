@@ -84,9 +84,9 @@
                         @Html.DisplayFor(modelItem => item.Date)
                     </td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.OrderId">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.OrderId">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.OrderId">Delete</a>
+                        <a asp-action="Edit" asp-route-id="@item.OrderId" class="btn btn-outline-primary">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.OrderId" class="btn btn-outline-info">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.OrderId" class="btn btn-outline-danger">Delete</a>
                     </td>
                 </tr>
             }

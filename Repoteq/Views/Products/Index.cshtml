@@ -1,4 +1,6 @@
-﻿@model IEnumerable<Repoteq.Models.Product>
+﻿@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@model IPagedList<Repoteq.Models.Product>
 
 @{
     ViewData["Title"] = "Index";
@@ -6,10 +8,31 @@
 
 <h1>Index</h1>
 
-<form class="d-flex" asp-action="Search" asp-controller="Products">
-    <input class="form-control me-sm-2" name="term" type="search" placeholder="Search">
-    <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+<form class="d-flex" asp-action="Search" asp-controller="Products" method="get">
+   
+    <div class="form-group">
+        <label for="ProductName">Product Name</label>
+        <input class="form-control me-sm-2" id="ProductName" name="ProductName" type="text" placeholder="Product Name">
+    </div>
+
+    <div class="form-group">
+        <label for="Price">Total</label>
+        <input class="form-control me-sm-2" id="Price" name="Price" type="number" placeholder="Price">
+    </div>
+
+    <div class="form-group">
+        <label for="FromDate">From Date</label>
+        <input class="form-control me-sm-2 datepicker" id="FromDate" name="FromDate" type="date">
+    </div>
+
+    <div class="form-group">
+        <label for="ToDate">To Date</label>
+        <input class="form-control me-sm-2 datepicker" id="ToDate" name="ToDate" type="date" placeholder="To Date">
+    </div>
+
+    <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
 </form>
+
 
 <p>
     <a asp-action="Create" class="btn btn-primary">Create New</a>
@@ -18,16 +41,16 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Image)
+                Image
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ProductName)
+                ProductName
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Price)
+                Price
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Date)
+                Date
             </th>
             <th>
                 Action
@@ -54,11 +77,61 @@
                 @Html.DisplayFor(modelItem => item.Date)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.ProductId" class="btn btn-outline-primary">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-outline-info">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ProductId" class="btn btn-outline-danger">Delete</a>
             </td>
         </tr>
 }
     </tbody>
 </table>
+
+@Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page = page }),
+    new X.PagedList.Mvc.Common.PagedListRenderOptionsBase
+    {
+        DisplayItemSliceAndTotal = true,
+        ContainerDivClasses = new[] { "navigation" },
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" },
+    })
+
+
+@section Scripts{
+    <script>
+        $(function () {
+            $('ul.pagination > li.disabled > a').addClass('page-link');
+        });
+
+        $(function () {
+            $('.datepicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true
+            });
+        });
+
+        $(function(){
+            var searchParams = new URLSearchParams(window.location.search);
+
+            $('#ProductName').val(searchParams.get('ProductName'));
+            $('#Price').val(searchParams.get('Price'));
+            $('#FromDate').val(searchParams.get('FromDate'));
+            $('#ToDate').val(searchParams.get('ToDate'));
+
+            $('.form-control').on('input', function () {
+                var allEmpty = true;
+                $('.form-control').each(function () {
+                    if ($(this).val().trim() !== '') {
+                        allEmpty = false;s
+                        return false;
+                    }
+                });
+
+                
+                if (allEmpty) {
+                    window.location.href = window.location.origin + '/Products?page=1';
+                }
+            });
+        });
+
+    </script>
+}

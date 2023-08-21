@@ -5,6 +5,9 @@ using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Repoteq.Repositories.interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Repoteq.ViewModel.Products;
+using Repoteq.ViewModel.Orders;
+using static NuGet.Packaging.PackagingConstants;
+using X.PagedList;
 
 namespace Repoteq.Controllers
 {
@@ -23,10 +26,15 @@ namespace Repoteq.Controllers
 
 
         // GET: Products
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page)
         {
             var products = await _productRepository.GetAll();
-            return View(products);
+            int pageNumber = page ?? 1;
+            int pageSize = 5;
+
+            var pagedProducts = products.ToPagedList(pageNumber, pageSize);
+           
+            return View(pagedProducts);
         }
 
         // GET: Products/Details/5
@@ -150,18 +158,6 @@ namespace Repoteq.Controllers
         }
 
 
-
-        //public IActionResult Search(string term)
-        //{
-        //    var result = _productRepository.Search(term);
-
-        //    return View("Index", result);
-        //}
-
-
-
-
-
         string UploadFile(IFormFile file)
         {
             if (file != null)
@@ -197,5 +193,34 @@ namespace Repoteq.Controllers
 
             return imageUrl;
         }
+
+
+        public async Task<IActionResult> Search(ProductSearchViewModel searchModel)
+        {
+            var products = await _productRepository.GetAll();
+
+            if (!string.IsNullOrEmpty(searchModel.ProductName))
+            {
+                products = products.Where(p => p.ProductName.Contains(searchModel.ProductName));
+            }
+
+            if (searchModel.Price.HasValue)
+            {
+                products = products.Where(p => p.Price == searchModel.Price.Value);
+            }
+
+            if (searchModel.FromDate.HasValue)
+            {
+                products = products.Where(p => p.Date >= searchModel.FromDate.Value);
+            }
+
+            if (searchModel.ToDate.HasValue)
+            {
+                products = products.Where(p => p.Date <= searchModel.ToDate.Value);
+            }
+
+            return View("Index", products.ToPagedList());
+        }
+
     }
 }
